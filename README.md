@@ -1,0 +1,1 @@
+# Application-of-ML-PINNs-for-predicting-axial-loads-capacity-of-concrete-filled-steel-columns
