@@ -41,6 +41,21 @@ This project implements data preprocessing, model selection, hyperparameter tuni
 - **CatBoost Regressor (L2 Loss)** & **XGBoost Regressor**: Achieved superior $R^2$ scores and minimum RMSE / MAE error metrics on unseen test data.
 - **Metaheuristic Optimization**: Mealpy optimization framework was integrated to fine-tune model parameters dynamically using FPA, SMA, and SOS algorithms.
 
+## ANN Development
+
+ANN development has started in [`best_model.ipynb`](best_model.ipynb). The current
+implementation includes:
+
+- Standardization of the input features and target variable.
+- A feed-forward network with the architecture `128 -> 128 -> 64 -> 32 -> 1`.
+- SiLU activation functions and Xavier weight initialization.
+- AdamW optimization with weight decay and a `ReduceLROnPlateau` scheduler.
+- Validation-based model selection, gradient clipping, and early stopping.
+- Training, validation, and testing metrics including $R^2$, MSE, RMSE, MAE, and MAPE.
+- Training-history, actual-versus-predicted, residual, and comparison-table outputs.
+
+The best ANN weights are saved as `optimized_ann_model.pt` after training.
+
 ## Getting Started
 
 ### Prerequisites
