@@ -2,7 +2,7 @@
 
 This repository contains machine learning models, metaheuristic optimizations, and analytical implementations for predicting the axial load capacity ($P_{exp}$) of Concrete-Filled Steel Tube (CFST) columns.
 
-## 📌 Overview
+## Overview
 Concrete-Filled Steel Tube (CFST) columns are widely used in modern civil engineering structures due to their excellent structural performance, ductility, and high load-bearing capacity. Accurately predicting their ultimate axial load capacity requires accounting for complex interactions between the steel tube and the concrete core (such as confinement effects).
 
 This project implements data preprocessing, model selection, hyperparameter tuning, and metaheuristic optimization algorithms (FPA, SMA, SOS) across multiple ML paradigms:
@@ -11,7 +11,7 @@ This project implements data preprocessing, model selection, hyperparameter tuni
 - **Ensemble & Tree-based Models** (Random Forest, Extra Trees, XGBoost, CatBoost)
 - **Bio-Inspired Metaheuristic Algorithms** (Flower Pollination Algorithm, Slime Mould Algorithm, Symbiotic Organisms Search)
 
-## 📁 Repository Structure
+## Repository Structure
 ```
 .
 ├── CIRC_model_ready.csv    # Prepared dataset of CFST column dimensions, material properties & axial capacities
@@ -21,7 +21,7 @@ This project implements data preprocessing, model selection, hyperparameter tuni
 └── README.md               # Project documentation
 ```
 
-## 📊 Dataset Parameters
+## Dataset Parameters
 - **`D`**: Outer diameter of steel tube (mm)
 - **`t`**: Wall thickness of steel tube (mm)
 - **`Fy`**: Yield strength of steel (MPa)
@@ -37,11 +37,11 @@ This project implements data preprocessing, model selection, hyperparameter tuni
 - **`Xi`**: Confinement factor ($\xi$)
 - **`Pexp`**: Experimental axial load capacity (kN) - *Target Variable*
 
-## 🚀 Key Results & Best Models
+## Key Results & Best Models
 - **CatBoost Regressor (L2 Loss)** & **XGBoost Regressor**: Achieved superior $R^2$ scores and minimum RMSE / MAE error metrics on unseen test data.
 - **Metaheuristic Optimization**: Mealpy optimization framework was integrated to fine-tune model parameters dynamically using FPA, SMA, and SOS algorithms.
 
-## 💻 Getting Started
+## Getting Started
 
 ### Prerequisites
 Make sure you have Python 3.8+ installed along with the following packages:
