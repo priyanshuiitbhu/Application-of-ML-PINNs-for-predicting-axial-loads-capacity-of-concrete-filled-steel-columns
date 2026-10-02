@@ -1,92 +1,149 @@
-# Application of ML & PINNs for Predicting Axial Load Capacity of Concrete-Filled Steel Columns
+# ML and PINNs for Axial Load Capacity Prediction of CFST Columns
 
-This repository contains machine learning models, metaheuristic optimizations, and analytical implementations for predicting the axial load capacity ($P_{exp}$) of Concrete-Filled Steel Tube (CFST) columns.
+This repository investigates machine learning and physics-informed neural network
+(PINN) methods for predicting the experimental axial load capacity (`Pexp`) of
+concrete-filled steel tube (CFST) columns.
 
-## Overview
-Concrete-Filled Steel Tube (CFST) columns are widely used in modern civil engineering structures due to their excellent structural performance, ductility, and high load-bearing capacity. Accurately predicting their ultimate axial load capacity requires accounting for complex interactions between the steel tube and the concrete core (such as confinement effects).
+CFST capacity depends on nonlinear interactions between the steel tube, concrete
+core, geometry, material strength, confinement, and slenderness. The project
+compares conventional machine learning models with an artificial neural network
+(ANN), then adds interpretability, uncertainty estimation, and a physical
+squash-load constraint.
 
-This project implements data preprocessing, model selection, hyperparameter tuning, and metaheuristic optimization algorithms (FPA, SMA, SOS) across multiple ML paradigms:
-- **K-Nearest Neighbors (KNN)** (Multiple metric & weight variants)
-- **Support Vector Regression (SVR)** ($\nu$-SVR with RBF kernels, Fuzzy SVR)
-- **Ensemble & Tree-based Models** (Random Forest, Extra Trees, XGBoost, CatBoost)
-- **Bio-Inspired Metaheuristic Algorithms** (Flower Pollination Algorithm, Slime Mould Algorithm, Symbiotic Organisms Search)
+## Project Workflow
+
+The notebooks cover:
+
+- Data loading, validation, visualization, and feature preparation.
+- Baseline regression models, including KNN, SVR, tree ensembles, XGBoost, and
+  CatBoost.
+- Hyperparameter and metaheuristic optimization experiments.
+- A PyTorch ANN with standardized inputs and target values.
+- SHAP feature-attribution analysis.
+- Monte Carlo Dropout uncertainty estimation.
+- PINN fine-tuning with a differentiable squash-load constraint.
+- Generation of a short methodology report in PDF format.
 
 ## Repository Structure
-```
+
+```text
 .
-├── CIRC_model_ready.csv    # Prepared dataset of CFST column dimensions, material properties & axial capacities
-├── project.ipynb           # Comprehensive Jupyter Notebook with data processing, training, tuning & evaluation
-├── ANN_PINNs.ipynb      # ANN experiments and a planned PINNs section
-├── ANN_PINNs_output.json # Saved final ANN cell outputs in Jupyter format
-├── ML basics - report.docx # Detailed project documentation report
-├── .gitignore              # Git ignore configuration
-└── README.md               # Project documentation
+├── ANN_PINNs.ipynb          # ANN, SHAP, uncertainty, and PINN experiments
+├── ANN_PINNs_output.json    # Saved notebook output representation
+├── CIRC_model_ready.csv     # Prepared CFST dataset
+├── project.ipynb            # Conventional ML and optimization experiments
+├── ML basics - report.docx  # Supporting project report
+├── .gitignore
+└── README.md
 ```
 
-## Dataset Parameters
-- **`D`**: Outer diameter of steel tube (mm)
-- **`t`**: Wall thickness of steel tube (mm)
-- **`Fy`**: Yield strength of steel (MPa)
-- **`fc`**: Compressive strength of concrete core (MPa)
-- **`L`**: Column length (mm)
-- **`Dt`**: Diameter-to-thickness ratio ($D/t$)
-- **`LD`**: Length-to-diameter ratio ($L/D$)
-- **`Ac`**: Cross-sectional area of concrete core ($\text{mm}^2$)
-- **`As`**: Cross-sectional area of steel tube ($\text{mm}^2$)
-- **`SteelCap`**: Steel yield capacity ($A_s \cdot F_y$)
-- **`ConcCap`**: Concrete compressive capacity ($A_c \cdot f_c$)
-- **`Squash`**: Theoretical squash load ($A_s F_y + A_c f_c$)
-- **`Xi`**: Confinement factor ($\xi$)
-- **`Pexp`**: Experimental axial load capacity (kN) - *Target Variable*
+Model weights and generated reports are runtime artifacts. The notebooks can
+create files such as `optimized_ann_model.pt`, `best_model.pt`, and
+`Methodology_Report.pdf` locally.
 
-## Key Results & Best Models
-- **CatBoost Regressor (L2 Loss)** & **XGBoost Regressor**: Achieved superior $R^2$ scores and minimum RMSE / MAE error metrics on unseen test data.
-- **Metaheuristic Optimization**: Mealpy optimization framework was integrated to fine-tune model parameters dynamically using FPA, SMA, and SOS algorithms.
+## Dataset
 
-## ANN Development
+The target is experimental axial load capacity in kilonewtons.
 
-The ANN experiments are in [`ANN_PINNs.ipynb`](ANN_PINNs.ipynb). The current
-implementation includes:
+| Column | Description |
+| --- | --- |
+| `D` | Outer steel-tube diameter (mm) |
+| `t` | Steel-tube wall thickness (mm) |
+| `Fy` | Steel yield strength (MPa) |
+| `fc` | Concrete compressive strength (MPa) |
+| `L` | Column length (mm) |
+| `Dt` | Diameter-to-thickness ratio, `D/t` |
+| `LD` | Length-to-diameter ratio, `L/D` |
+| `Ac` | Concrete-core cross-sectional area (mm²) |
+| `As` | Steel-tube cross-sectional area (mm²) |
+| `SteelCap` | Steel contribution, `As × Fy` |
+| `ConcCap` | Concrete contribution, `Ac × fc` |
+| `Squash` | Theoretical squash load |
+| `Xi` | Confinement factor |
+| `Pexp` | Experimental axial capacity (kN), the prediction target |
 
-- Standardization of the input features and target variable.
-- A feed-forward network with the architecture `128 -> 128 -> 64 -> 32 -> 1`.
-- SiLU activation functions and Xavier weight initialization.
-- AdamW optimization with weight decay and a `ReduceLROnPlateau` scheduler.
-- Validation-based model selection, gradient clipping, and early stopping.
-- Training, validation, and testing metrics including $R^2$, MSE, RMSE, MAE, and MAPE.
-- Training-history, actual-versus-predicted, residual, and comparison-table outputs.
+## ANN Implementation
 
-The notebook now includes an “Introducing PINNs” heading followed by an empty
-code cell. PINNs are planned; no physics-informed model is implemented yet.
+[`ANN_PINNs.ipynb`](ANN_PINNs.ipynb) builds a feed-forward PyTorch network with:
 
-The best ANN weights are saved locally as `optimized_ann_model.pt` after training.
+- Hidden layers of `128 → 128 → 64 → 32` neurons.
+- SiLU activation and Dropout regularization.
+- Xavier weight initialization.
+- AdamW optimization and a `ReduceLROnPlateau` scheduler.
+- Gradient clipping, validation-based checkpointing, and early stopping.
+- MSE, RMSE, MAE, MAPE, and R² evaluation metrics.
 
-The saved optimized run reports a testing R² of **0.9582**, RMSE of **824.1041 kN**,
-MAE of **371.2903 kN**, and MAPE of **23.5508%**. It uses an 80/20 train/test
-split and reserves 15% of the training partition for validation. These are the
-notebook's recorded results; they have not been independently rerun for this update.
+The notebook automatically selects CUDA, Apple MPS, or CPU. Tensors are moved to
+the model's device before training and inference.
 
-The final ANN cell's saved text and chart outputs are also available in
-[`ANN_PINNs_output.json`](ANN_PINNs_output.json). PNG outputs use the standard
-Jupyter base64 representation.
+The recorded optimized ANN test results are:
 
-## Getting Started
+| Metric | Value |
+| --- | ---: |
+| R² | 0.9582 |
+| RMSE | 824.1041 kN |
+| MAE | 371.2903 kN |
+| MAPE | 23.5508% |
 
-### Prerequisites
-Make sure you have Python 3.8+ installed along with the following packages:
+These values are saved notebook results and can vary when the model is retrained.
+
+## Model Interpretation and Uncertainty
+
+SHAP's `GradientExplainer` is used because the ANN contains SiLU activations.
+The explanation runs on a CPU copy of the trained model, leaving the original
+model unchanged.
+
+Monte Carlo Dropout keeps Dropout layers active during repeated inference. The
+mean prediction represents expected capacity, while the standard deviation
+estimates epistemic uncertainty. Results are converted from the standardized
+target scale back to kN before plotting.
+
+## Physics-Informed Fine-Tuning
+
+The PINN loss combines:
+
+1. Data loss: mean squared error between predicted and experimental capacity.
+2. Physics loss: a penalty when predicted capacity exceeds the theoretical
+   squash load.
+
+The squash load is calculated from the unscaled physical features:
+
+```text
+P_squash = (Ac × fc + As × Fy) / 1000
+```
+
+The physics violation is normalized to the target scale before it is combined
+with the data loss. This keeps the two loss terms numerically comparable.
+
+## Installation
+
+Python 3.10 or newer is recommended. Create and activate a virtual environment,
+then install the notebook dependencies:
+
 ```bash
-pip install pandas numpy matplotlib seaborn scikit-learn xgboost catboost mealpy torch notebook
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install \
+  jupyter pandas numpy matplotlib seaborn scikit-learn \
+  torch xgboost catboost mealpy shap fpdf2
 ```
 
-### Running the Notebook
-Launch Jupyter Notebook to explore the code:
+`fpdf2` provides the `from fpdf import FPDF` import used by the methodology-report
+cell.
+
+## Running the Notebooks
+
+Start Jupyter from the repository directory so the relative dataset path works:
+
 ```bash
-jupyter notebook project.ipynb
+jupyter notebook
 ```
 
-For the ANN notebook and planned PINNs work, run from the repository directory so the
-relative dataset path resolves correctly:
+Open `project.ipynb` for conventional ML experiments or `ANN_PINNs.ipynb` for the
+ANN and PINN workflow. Run the ANN notebook from top to bottom because later
+sections use the trained model, fitted scalers, DataLoader, and feature columns
+created earlier.
 
-```bash
-jupyter notebook ANN_PINNs.ipynb
-```
+Training uses random initialization and random train/validation splits, so exact
+metrics can differ between runs unless all random seeds are fixed.
