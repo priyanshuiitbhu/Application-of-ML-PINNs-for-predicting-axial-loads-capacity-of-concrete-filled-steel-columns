@@ -12,13 +12,7 @@
       "ANN data split:\n",
       "Training   : (775, 13)\n",
       "Validation : (137, 13)\n",
-      "Final Test : (229, 13)\n"
-    ]
-  },
-  {
-    "name": "stdout",
-    "output_type": "stream",
-    "text": [
+      "Final Test : (229, 13)\n",
       "\n",
       "ANN Architecture:\n",
       "ANN(\n",
