@@ -76,6 +76,12 @@ The target is experimental axial load capacity in kilonewtons.
 The notebook automatically selects CUDA, Apple MPS, or CPU. Tensors are moved to
 the model's device before training and inference.
 
+Before running the PINN section, execute the setup cell immediately below
+`Introduction to PINNs`. It restores the dataset split, scalers, DataLoaders,
+model, loss function, and optimizer when the notebook has been opened with a
+fresh or partially reset kernel. If the optimized ANN is not already in memory,
+the cell loads `optimized_ann_model.pt` from the project directory.
+
 The recorded optimized ANN test results are:
 
 | Metric | Value |
@@ -141,9 +147,15 @@ jupyter notebook
 ```
 
 Open `project.ipynb` for conventional ML experiments or `ANN_PINNs.ipynb` for the
-ANN and PINN workflow. Run the ANN notebook from top to bottom because later
-sections use the trained model, fitted scalers, DataLoader, and feature columns
-created earlier.
+ANN and PINN workflow. Run `ANN_PINNs.ipynb` from top to bottom when possible.
+If the kernel was restarted or only the PINN section is needed, run the setup
+cell below `Introduction to PINNs` before the PINN loss and training cells. It
+recreates the required preprocessing objects and loads `optimized_ann_model.pt`
+when the trained model is not already available.
+
+The PINN training cell uses the initialized `optimizer` and reports total,
+data, and physics losses every 50 epochs. The evaluation cells convert the
+standardized predictions back to kN before calculating R², RMSE, and MAE.
 
 Training uses random initialization and random train/validation splits, so exact
 metrics can differ between runs unless all random seeds are fixed.
